@@ -1,41 +1,59 @@
 import axios from 'axios'
 
-const settings = {
-    withCredentials: true,
-    headers: {
-        // Не забываем заменить API-KEY на собственный
-        'API-KEY': '5835496f-e51a-452d-a3a0-e64dd670b3f1',
-    },
+type TodolistType = {
+    id: string
+    addedDate: string
+    order: number
+    title: string
 }
+
+
+type ResponseType<T> = {
+    resultCode: number
+    messages: Array<string>
+    fieldsErrors: Array<string>
+    data: T
+}
+
+
+
+
+
+const instance = axios.create(
+    {
+        baseURL: 'https://social-network.samuraijs.com/api/1.1/',
+        withCredentials: true,
+        headers: {
+            // Не забываем заменить API-KEY на собственный
+            'API-KEY': '5835496f-e51a-452d-a3a0-e64dd670b3f1',
+        },
+    }
+)
 
 export const todolistAPI = {
     getTodolist() {
-        const promise = axios.get(
-            'https://social-network.samuraijs.com/api/1.0/todo-lists',
-            settings
+        const promise = instance.get<TodolistType[]>(
+            'todo-lists',
         )
         return promise
     },
     createTodolist(title: string) {
-        const promise = axios.post(
-            'https://social-network.samuraijs.com/api/1.0/todo-lists',
+        const promise = instance.post<ResponseType<{ item: TodolistType }>>(
+            'todo-lists',
             {title: title},
-            settings
         )
         return promise
     },
     deleteTodolist(todolistId: string) {
-        const promise = axios.delete(
-            `https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}`,
-            settings
+        const promise = instance.delete<ResponseType<{}>>(
+            `todo-lists/${todolistId}`,
         )
         return promise
     },
     updateTodolist(todolistId: string, title: string) {
-        const promise = axios.put(
-            `https://social-network.samuraijs.com/api/1.1/todo-lists/${todolistId}`,
+        const promise = instance.put<ResponseType<{}>>(
+            `todo-lists/${todolistId}`,
             {title: title},
-            settings
         )
         return promise
     }
